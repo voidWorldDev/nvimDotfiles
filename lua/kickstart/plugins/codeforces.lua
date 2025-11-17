@@ -3,10 +3,16 @@ return {
 	dependencies = "MunifTanjim/nui.nvim",
 	config = function()
 		require("competitest").setup({
-			single_file_testcase = true,
-
+			testcases_use_single_file = true,
+			testcases_directory = "./testcases",
 			template_file = {
-				cpp = "/home/great/utils/template/main.cpp", -- Correct way
+				cpp = "/home/great/utils/template/main.cpp",
+			},
+			testcases_auto_detect_storage = true,
+			runner_ui = {
+				viewer = {
+					open_when_compilation_fails = true,
+				},
 			},
 		})
 	end,
