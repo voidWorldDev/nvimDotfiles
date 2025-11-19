@@ -20,7 +20,7 @@ require("kickstart.core.autocmds")
 -- Load ALL plugins from lua/kickstart/plugins/*.lua
 require("lazy").setup("kickstart.plugins", {
 	install = { colorscheme = { "tokyonight" } },
-	checker = { enabled = true },
+	checker = { enabled = false },
 	performance = {
 		rtp = {
 			disabled_plugins = {
