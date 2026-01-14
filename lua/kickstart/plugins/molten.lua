@@ -1,69 +1,138 @@
--- In your plugin spec (lazy.nvim example)
-
 return {
+
+	-----------------------------------------------------------------------------
+	-- 1. Molten – Jupyter-like notebook experience in Neovim
+	-----------------------------------------------------------------------------
 	{
 		"benlubas/molten-nvim",
-		version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
+		version = "^1.0.0", -- use <2.0.0 to avoid big breaking changes
 		dependencies = { "3rd/image.nvim" },
 		build = ":UpdateRemotePlugins",
+		event = "VeryLazy", -- or "BufReadPre *.ipynb,*.qmd,*.ju.md" etc.
+
 		init = function()
-			-- Main molten settings (very recommended)
+			-- ==================== Recommended Molten settings ====================
 			vim.g.molten_image_provider = "image.nvim"
-			vim.g.molten_output_win_max_height = 0.4 -- 40% of window height
+			vim.g.molten_output_win_max_height = 0.45 -- 45% of window
 			vim.g.molten_virt_text_output = true
 			vim.g.molten_virt_lines_off_screen = false
-			vim.g.molten_auto_open_output = false -- most people disable auto-open
+			vim.g.molten_auto_open_output = false -- most people prefer manual control
 			vim.g.molten_wrap_output = true
-			vim.g.molten_virt_text_max_lines = 12
+			vim.g.molten_virt_text_max_lines = 14
 			vim.g.molten_use_border_highlights = true
-			vim.g.molten_output_show_more = true
+			vim.g.molten_output_show_more = true -- … more button
+			vim.g.molten_auto_scroll_output = true -- useful when running many cells
+			vim.g.molten_virt_text_max_lines = 16 -- a bit more generous
 
-			-- Very useful keymaps (add to which-key / your mappings)
-			vim.keymap.set("n", "<localleader>mi", ":MoltenInit<CR>", { desc = "Molten Init kernel" })
-			vim.keymap.set("n", "<localleader>mr", ":MoltenReevaluateCell<CR>", { desc = "Re-run cell" })
-			vim.keymap.set("n", "<localleader>mo", ":noautocmd MoltenEnterOutput<CR>", { desc = "Open output" })
-			vim.keymap.set("n", "<localleader>mh", ":MoltenHideOutput<CR>", { desc = "Hide output" })
-			vim.keymap.set("n", "<localleader>md", ":MoltenDelete<CR>", { desc = "Delete cell output" })
-			vim.keymap.set("n", "<localleader>ms", ":MoltenShowOutput<CR>", { desc = "Show output" })
+			-- ==================== Popular & recommended keymaps ====================
+			local map = vim.keymap.set
+			local opts = { silent = true, noremap = true }
 
-			-- Most popular running mappings
-			vim.keymap.set("n", "<localleader>ml", ":MoltenEvaluateLine<CR>", { desc = "Run line" })
-			vim.keymap.set("v", "<localleader>mv", ":<C-u>MoltenEvaluateVisual<CR>", { desc = "Run visual" })
-			vim.keymap.set("n", "<localleader>mc", ":MoltenEvaluateOperator<CR>", { desc = "Run operator (motion)" })
-			vim.keymap.set("n", "<localleader>ma", ":MoltenEvaluateAllAbove<CR>", { desc = "Run all above" })
+			-- Cell / Kernel management
+			map("n", "<localleader>mi", "<cmd>MoltenInit<CR>", { desc = "Molten: Init kernel", unpack(opts) })
+			map("n", "<localleader>mk", "<cmd>MoltenInit<CR>", { desc = "Molten: (re)Init kernel", unpack(opts) })
+			map("n", "<localleader>mr", "<cmd>MoltenReevaluateCell<CR>", { desc = "Molten: Re-run cell", unpack(opts) })
+			map(
+				"n",
+				"<localleader>mR",
+				"<cmd>MoltenReevaluateAll<CR>",
+				{ desc = "Molten: Re-run whole file", unpack(opts) }
+			)
+
+			-- Output window control
+			map(
+				"n",
+				"<localleader>mo",
+				"<cmd>noautocmd MoltenEnterOutput<CR>",
+				{ desc = "Molten: Open output", unpack(opts) }
+			)
+			map("n", "<localleader>mh", "<cmd>MoltenHideOutput<CR>", { desc = "Molten: Hide output", unpack(opts) })
+			map("n", "<localleader>ms", "<cmd>MoltenShowOutput<CR>", { desc = "Molten: Show output", unpack(opts) })
+			map("n", "<localleader>md", "<cmd>MoltenDelete<CR>", { desc = "Molten: Delete cell output", unpack(opts) })
+
+			-- Most used – running code
+			map("n", "<localleader>ml", "<cmd>MoltenEvaluateLine<CR>", { desc = "Molten: Run line", unpack(opts) })
+			map(
+				"v",
+				"<localleader>mv",
+				":<C-u>MoltenEvaluateVisual<CR>",
+				{ desc = "Molten: Run visual selection", unpack(opts) }
+			)
+			map(
+				"n",
+				"<localleader>mc",
+				"<cmd>MoltenEvaluateOperator<CR>",
+				{ desc = "Molten: Run with motion (operator)", unpack(opts) }
+			)
+			map(
+				"n",
+				"<localleader>ma",
+				"<cmd>MoltenEvaluateAllAbove<CR>",
+				{ desc = "Molten: Run all cells above", unpack(opts) }
+			)
+			map(
+				"n",
+				"<localleader>mb",
+				"<cmd>MoltenEvaluateAllBelow<CR>",
+				{ desc = "Molten: Run all cells below", unpack(opts) }
+			)
+
+			-- Bonus / less frequent but useful
+			map(
+				"n",
+				"<localleader>mp",
+				"<cmd>MoltenPaste<CR>",
+				{ desc = "Molten: Paste last yanked output", unpack(opts) }
+			)
 		end,
 	},
+
+	-----------------------------------------------------------------------------
+	-- 2. Jupytext – seamless .ipynb ↔ .py/.md/.qmd editing
+	-----------------------------------------------------------------------------
 	{
 		"GCBallesteros/jupytext.nvim",
-		lazy = false, -- important: load early
+		lazy = false, -- very important: should load early
 		opts = {
-			style = "markdown",
+			style = "markdown", -- or "hydrogen", "percent", "light"
 			output_extension = "md",
-			force_ft = "markdown", -- crucial for quarto/otter to activate
+			force_ft = "markdown", -- crucial for quarto & otter to work properly
 		},
 	},
 
-	-- 2. quarto-nvim (cell highlighting, navigation, runner integration)
+	-----------------------------------------------------------------------------
+	-- 3. Quarto + Otter – best Quarto experience + LSP in code cells
+	-----------------------------------------------------------------------------
 	{
 		"quarto-dev/quarto-nvim",
 		dependencies = { "jmbuhr/otter.nvim" },
+		ft = { "quarto", "markdown" }, -- can be lazy-loaded
 		opts = {
 			lspFeatures = {
-				languages = { "python" }, -- add others if needed
+				enabled = true,
+				languages = { "python", "r", "julia", "bash" }, -- ← add what you use
 				diagnostics = { enabled = true },
 				completions = { enabled = true },
 			},
 			codeRunner = {
 				enabled = true,
-				default_method = "molten", -- tells quarto to use molten to run code
+				default_method = "molten", -- very important!
+				focus = false,
+			},
+			keymap = {
+				enabled = false, -- we define our own below / use which-key
 			},
 		},
 	},
-	-- Almost mandatory for good image support
+
+	-----------------------------------------------------------------------------
+	-- 4. Image.nvim – best image rendering experience (kitty recommended)
+	-----------------------------------------------------------------------------
 	{
 		"3rd/image.nvim",
+		lazy = true,
 		opts = {
-			backend = "kitty", -- or "ueberzug" / "iterm2" depending on your terminal
+			backend = "kitty", -- "kitty" > "ueberzugpp" > "iterm2"
 			integrations = {
 				markdown = {
 					enabled = true,
@@ -73,7 +142,18 @@ return {
 				},
 			},
 			max_height_window_percentage = 50,
-			hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" },
+			max_width_window_percentage = 100,
+			max_height = nil, -- useful when you have small floating windows
+			editor_only_render_when_focused = false,
+			hijack_file_patterns = {
+				"*.png",
+				"*.jpg",
+				"*.jpeg",
+				"*.gif",
+				"*.webp",
+				"*.avif",
+				"*.svg",
+			},
 		},
 	},
 }
