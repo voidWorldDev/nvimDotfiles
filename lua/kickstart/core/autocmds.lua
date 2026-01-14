@@ -35,3 +35,11 @@ vim.api.nvim_create_autocmd("FileType", {
 		end
 	end,
 })
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+	pattern ={ "*.ipynb",
+	"*.md"}, -- or *.py if you want plain Python
+	callback = function()
+		vim.cmd("MoltenSaveOutput")
+	end,
+})
