@@ -19,7 +19,7 @@ return {
 		filesystem = {
 			filtered_items = {
 				hide_dotfiles = false,
-				hide_gitignored = true,
+				hide_gitignored = false,
 				hide_by_name = { "node_modules", ".DS_Store", "thumbs.db" },
 				always_show = { ".gitignore" },
 				never_show = { ".env.local" },
