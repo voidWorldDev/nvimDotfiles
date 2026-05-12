@@ -1,6 +1,6 @@
 return {
 	"kawre/leetcode.nvim",
-	build = ":LeetCode setup",
+	build = "LeetCode setup",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"MunifTanjim/nui.nvim",
