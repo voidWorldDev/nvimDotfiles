@@ -20,9 +20,9 @@ return {
 			filtered_items = {
 				hide_dotfiles = false,
 				hide_gitignored = false,
-				hide_by_name = { "node_modules", ".DS_Store", "thumbs.db" },
+				-- hide_by_name = { "node_modules", ".DS_Store", "thumbs.db" },
 				always_show = { ".gitignore" },
-				never_show = { ".env.local" },
+				-- never_show = { ".env.local" },
 			},
 			follow_current_file = {
 				enabled = true, -- auto-focus Neo-tree on current buffer

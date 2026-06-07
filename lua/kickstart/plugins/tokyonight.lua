@@ -5,10 +5,11 @@ return {
 	priority = 1000, -- highest priority
 	opts = {
 		style = "storm", -- this is the dark-blue one
-		transparent = false,
-		terminal_colors = false,
+		transparent = true, -- make this false in case of tokyonight colors
+		terminal_colors = true,
 		styles = {
 			sidebars = "dark-blue",
+			-- floats = "transparent",
 			floats = "dark",
 		},
 		on_colors = function(colors)
