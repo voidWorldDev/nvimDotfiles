@@ -8,6 +8,7 @@ local tools = {
   "docker_compose_language_service",
   "docker_language_server",
   "stylua",
+  "prettier",
   "ts_ls",
 }
 
