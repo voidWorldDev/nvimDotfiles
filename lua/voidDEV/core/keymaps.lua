@@ -50,3 +50,7 @@ keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
 keymap("n", "<leader>tv", ":vsplit | terminal zsh<CR>", { noremap = true, silent = true, desc = "Vertical terminal" })
 keymap("n", "<leader>th", ":split | terminal zsh<CR>", { noremap = true, silent = true, desc = "Vertical terminal" })
 keymap("t", "<A-q>", "<C-\\><C-n>", opts)
+
+vim.keymap.set({ "n", "x" }, "d", '"_d')
+vim.keymap.set({ "n", "x" }, "c", '"_c')
+vim.keymap.set("n", "x", '"_x')
