@@ -162,5 +162,17 @@ return {
 			},
 			-- add other server-specific opts here as needed
 		}
+		local servers = require("mason-lspconfig").get_installed_servers()
+
+		for _, server in ipairs(servers) do
+			local opts = vim.tbl_deep_extend("force", {
+				capabilities = capabilities,
+				on_attach = on_attach,
+			}, server_opts[server] or {})
+
+			vim.lsp.config(server, opts)
+		end
+
+		vim.lsp.enable(servers)
 	end,
 }
